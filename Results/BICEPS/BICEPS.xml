@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beast beautitemplate="Standard" beautistatus="" namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="" version="2.6">
+  <data id="aligned" spec="Alignment">
+  $(sequences)
+     </data>
+  <map name="Uniform">beast.math.distributions.Uniform</map>
+  <map name="Exponential">beast.math.distributions.Exponential</map>
+  <map name="LogNormal">beast.math.distributions.LogNormalDistributionModel</map>
+  <map name="Normal">beast.math.distributions.Normal</map>
+  <map name="Beta">beast.math.distributions.Beta</map>
+  <map name="Gamma">beast.math.distributions.Gamma</map>
+  <map name="LaplaceDistribution">beast.math.distributions.LaplaceDistribution</map>
+  <map name="prior">beast.math.distributions.Prior</map>
+  <map name="InverseGamma">beast.math.distributions.InverseGamma</map>
+  <map name="OneOnX">beast.math.distributions.OneOnX</map>
+  
+<run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" chainLength="200000000" storeEvery="200000" deltaTemperature="0.003" chains="4" resampleEvery="500">
+ <!--  <run id="mcmc" spec="MCMC" chainLength="100000000">    -->
+    <state id="state" spec="State" storeEvery="20000">
+      <tree id="Tree" spec="beast.evolution.tree.Tree" name="stateNode">
+        <!--  e.g.  Guangdong/20SF028/2020|2020-01-17|Asia|China|Guangdong|M=2020-01-17, ... -->
+        <trait id="dateTrait" spec="beast.evolution.tree.TraitSet" dateFormat="yyyy-M-dd" traitname="date" value="$(datetrait)">
+          <taxa id="TaxonSet.codon1" spec="TaxonSet">
+            <alignment id="codon1" spec="FilteredAlignment" filter="$(filter-codon1)">
+              <data idref="aligned"/>
+            </alignment>
+          </taxa>
+        </trait>
+        <taxonset idref="TaxonSet.codon1"/>
+      </tree>
+      <parameter id="kappa:codon1" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+      <parameter id="kappa:codon2" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+      <parameter id="kappa:codon3" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+      <parameter id="kappa:noncoding" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+      <parameter id="freq:codon2" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+      <parameter id="freq:noncoding" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+      <parameter id="freq:codon1" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+      <parameter id="freq:codon3" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+      <parameter id="mutationRate:codon1" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+      <parameter id="mutationRate:codon2" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+      <parameter id="mutationRate:codon3" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+      <parameter id="mutationRate:noncoding" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+      <parameter id="strict.clock" spec="parameter.RealParameter" name="stateNode">1.2E-3</parameter>
+      <parameter id="popSize" spec="parameter.RealParameter" dimension="1" lower="0.0" name="stateNode">1</parameter>
+      <parameter id="groupSizes" spec="parameter.IntegerParameter" dimension="1" name="stateNode">1</parameter>
+     
+    </state>
+  
+  
+  
+    <init id="RandomTree" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree" taxa="@codon1">
+      <populationModel id="ConstantPopulation0" spec="ConstantPopulation">
+        <parameter id="randomPopSize" spec="parameter.RealParameter" name="popSize">1.0</parameter>
+      </populationModel>
+    </init>
+  
+  
+  
+    <distribution id="posterior" spec="util.CompoundDistribution">        
+        
+        <distribution id="prior" spec="util.CompoundDistribution">
+            <distribution id="BICEPS" spec="biceps.BICEPS" ploidy="1.0"
+            	populationShape="3.0"
+            	populationMean="@popSize"
+            	groupSizes="@groupSizes"
+            	linkedMean="true" logMeans="false">
+          <treeIntervals id="BSPTreeIntervals" spec="TreeIntervals" tree="@Tree"/>
+        </distribution>
+        
+         <prior id="PopSizePrior" name="distribution" x="@popSize">
+             <LogNormal meanInRealSpace="true" name="distr" M="10" S="1.25"/>
+         </prior>
+            
+        <prior id="ClockRatePrior" name="distribution" x="@strict.clock">
+          <LogNormal id="LogNormalDistributionModel.ClockRate" meanInRealSpace="true" name="distr">
+            <!--     "7.87e-05" "9.12e-04" "1.06e-02"    -->
+            <parameter id="ClockRateLogM" spec="parameter.RealParameter" estimate="false" name="M">0.0008</parameter>
+            <parameter id="ClockRateLogS" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="2.0">0.03</parameter>
+          </LogNormal>
+        </prior>
+       
+	 <prior id="FrequenciesPrior:codon1" name="distribution" x="@freq:codon1">
+          <distr id="Dirichlet.1" spec="beast.math.distributions.Dirichlet">
+            <parameter id="Param.Dirichlet.1" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+          </distr>
+        </prior>
+        <prior id="FrequenciesPrior:codon2" name="distribution" x="@freq:codon2">
+          <distr id="Dirichlet.2" spec="beast.math.distributions.Dirichlet">
+            <parameter id="Param.Dirichlet.2" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+          </distr>
+        </prior>
+        <prior id="FrequenciesPrior:codon3" name="distribution" x="@freq:codon3">
+          <distr id="Dirichlet.3" spec="beast.math.distributions.Dirichlet">
+            <parameter id="Param.Dirichlet.3" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+          </distr>
+        </prior>
+        <prior id="FrequenciesPrior:noncoding" name="distribution" x="@freq:noncoding">
+          <distr id="Dirichlet.0" spec="beast.math.distributions.Dirichlet">
+            <parameter id="Param.Dirichlet.0" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+          </distr>
+        </prior>
+        <prior id="KappaPrior:codon1" name="distribution" x="@kappa:codon1">
+          <LogNormal id="LogNormalDistributionModel.2" name="distr">
+            <parameter id="RealParameter.10" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+            <parameter id="RealParameter.11" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">1.25</parameter>
+          </LogNormal>
+        </prior>
+        <prior id="KappaPrior:codon2" name="distribution" x="@kappa:codon2">
+          <LogNormal id="LogNormalDistributionModel.0.codon2" name="distr">
+            <parameter id="RealParameter.4.codon2" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+            <parameter id="RealParameter.5.codon2" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+          </LogNormal>
+        </prior>
+        <prior id="KappaPrior:codon3" name="distribution" x="@kappa:codon3">
+          <LogNormal id="LogNormalDistributionModel.0.codon3" name="distr">
+            <parameter id="RealParameter.4.codon3" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+            <parameter id="RealParameter.5.codon3" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+          </LogNormal>
+        </prior>
+       <prior id="KappaPrior:noncoding" name="distribution" x="@kappa:noncoding">
+          <LogNormal id="LogNormalDistributionModel.0.noncoding" name="distr">
+            <parameter id="RealParameter.4.noncoding" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+            <parameter id="RealParameter.5.noncoding" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+          </LogNormal> 
+        </prior>
+      </distribution>
+      <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
+        <distribution id="treeLikelihood.codon1" spec="ThreadedTreeLikelihood" data="@codon1" tree="@Tree">
+          <siteModel id="SiteModel:codon1" spec="SiteModel" mutationRate="@mutationRate:codon1">
+            <parameter id="gammaShape:codon1" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant:codon1" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="hky:codon1" spec="HKY" kappa="@kappa:codon1">
+              <frequencies id="estimatedFreqs:codon1" spec="Frequencies" frequencies="@freq:codon1"/>
+            </substModel>
+          </siteModel>
+          <branchRateModel id="StrictClock" spec="beast.evolution.branchratemodel.StrictClockModel" clock.rate="@strict.clock"/>
+        </distribution>
+        <distribution id="treeLikelihood.codon2" spec="ThreadedTreeLikelihood" branchRateModel="@StrictClock" tree="@Tree">
+          <data id="codon2" spec="FilteredAlignment" data="@aligned" filter="$(filter-codon2)"/>
+          <siteModel id="SiteModel:codon2" spec="SiteModel" mutationRate="@mutationRate:codon2">
+            <parameter id="gammaShape:codon2" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant:codon2" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="hky:codon2" spec="HKY" kappa="@kappa:codon2">
+              <frequencies id="estimatedFreqs:codon2" spec="Frequencies" frequencies="@freq:codon2"/>
+            </substModel>
+          </siteModel>
+        </distribution>
+        <distribution id="treeLikelihood.codon3" spec="ThreadedTreeLikelihood" branchRateModel="@StrictClock" tree="@Tree">
+          <data id="codon3" spec="FilteredAlignment" data="@aligned" filter="$(filter-codon3)"/>
+          <siteModel id="SiteModel:codon3" spec="SiteModel" mutationRate="@mutationRate:codon3">
+            <parameter id="gammaShape:codon3" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant:codon3" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="hky:codon3" spec="HKY" kappa="@kappa:codon3">
+              <frequencies id="estimatedFreqs:codon3" spec="Frequencies" frequencies="@freq:codon3"/>
+            </substModel>
+          </siteModel>
+        </distribution>
+        <distribution id="treeLikelihood.noncoding" spec="ThreadedTreeLikelihood" branchRateModel="@StrictClock" tree="@Tree">
+          <data id="noncoding" spec="FilteredAlignment" data="@aligned" filter="$(filter-noncoding)"/>
+          <siteModel id="SiteModel:noncoding" spec="SiteModel" mutationRate="@mutationRate:noncoding">
+            <parameter id="gammaShape:noncoding" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant:noncoding" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="hky:noncoding" spec="HKY" kappa="@kappa:noncoding">
+              <frequencies id="estimatedFreqs:noncoding" spec="Frequencies" frequencies="@freq:noncoding"/>
+            </substModel>
+          </siteModel>
+        </distribution>
+        <!--    <distribution id="traitedtreeLikelihood.loc" spec="AncestralStateTreeLikelihood" tag="location" tree="@Tree">
+          <data id="loc" spec="AlignmentFromTrait">
+            <traitSet id="traitSet.loc" spec="beast.evolution.tree.TraitSet" taxa="@TaxonSet.codon1" traitname="discrete">
+$(trait2demes)            
+</traitSet>   -->
+            <!--    codeMap= "Asia=0,AU=1,EU=2,NZ=3,RoW=4,USA=5,? = 0 1 2 3 4 5"   codelength="-1" states="6"   -->
+         <!--    <userDataType id="traitDataType.loc" spec="beast.evolution.datatype.UserDataType" codeMap="Brazil=0,Chile=1,Colombia=2,Argentina=3,Uruguay=4,Peru=5,Ecuador=6,Suriname=7,World=8,? = 0 1 2 3 4 5 6 7 8" codelength="-1" states="9"/>   -->
+         <!--    <userDataType id="traitDataType.loc" spec="beast.evolution.datatype.UserDataType" codeMap="Target=0,World=1,? = 0 1" codelength="-1" states="2"/>
+          </data>
+          <siteModel id="geoSiteModel" spec="SiteModel" gammaCategoryCount="1">
+            <parameter id="mutationRate" spec="parameter.RealParameter" estimate="false" name="mutationRate">1.0</parameter>
+            <parameter id="gammaShape" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="svs" spec="SVSGeneralSubstitutionModel" symmetric="false" rateIndicator="@rateIndicator" rates="@relativeGeoRates">
+              <frequencies id="traitfreqsF" spec="Frequencies">  -->
+              <!-- Trait frequencies should be 1/ number of dimesions -->
+                <!--    <parameter id="traitfreqs" spec="parameter.RealParameter" dimension="2" name="frequencies">0.5</parameter>
+              </frequencies>
+            </substModel>
+          </siteModel>
+          <branchRateModel id="StrictClockModel:loc" spec="beast.evolution.branchratemodel.StrictClockModel" clock.rate="@traitClockRate"/>
+        </distribution>  -->
+      </distribution>
+    </distribution>
+   
+    <operator id="EpochTop" spec="biceps.operators.EpochFlexOperator" tree="@Tree" weight="10.0" scaleFactor="0.1"/>
+    <operator id="EpochAll" spec="biceps.operators.EpochFlexOperator" tree="@Tree" weight="10.0" scaleFactor="0.1" fromOldestTipOnly="false"/>	    
+    <operator id="TreeFlex1" spec="biceps.operators.TreeStretchOperator" scaleFactor="0.01" tree="@Tree" weight="10.0"/>
+    <operator id="TreeFlexUpDown" spec="biceps.operators.TreeStretchOperator" scaleFactor="0.01" tree="@Tree" meanRate="@strict.clock" weight="10.0"/>
+
+
+	    <operator id="YuleModelNarrow.t:xMCMC" spec="Exchange" tree="@Tree" weight="30.0"/>
+
+    	<operator id="YuleModelSubtreeSlide.t:xMCMC" spec="SubtreeSlide" tree="@Tree" weight="30.0"/>
+
+	    <operator id="YuleModelUniformOperator.t:xMCMC" spec="BactrianNodeOperator" tree="@Tree" weight="45.0"/>      
+   
+    <operator id="FixMeanMutationRatesOperator" spec="BactrianDeltaExchangeOperator" delta="0.75" weight="0.03">
+      <parameter idref="mutationRate:codon1"/>
+      <parameter idref="mutationRate:codon2"/>
+      <parameter idref="mutationRate:codon3"/>
+      <parameter idref="mutationRate:noncoding"/>
+      <weightvector id="weightparameter" spec="parameter.IntegerParameter" dimension="4" estimate="false" lower="0" upper="0">$(partitionweights)</weightvector>
+    </operator>
+    <operator id="strictScaler" spec="ScaleOperator" parameter="@strict.clock" scaleFactor="0.5" weight="5.0"/>
+    
+    
+    <!-- <operator id="strictUpDownOperator" spec="UpDownOperator" scaleFactor="0.85" weight="25.0">
+      <up idref="strict.clock"/>
+      <down idref="Tree"/>
+    </operator> -->
+ 
+ 	<!--  <operator id="BayesianSkylineTreeScaler" spec="ScaleOperator" scaleFactor="0.85" tree="@Tree" weight="20.0"/>
+    <operator id="BayesianSkylineTreeRootScaler" spec="ScaleOperator" rootOnly="true" scaleFactor="0.75" tree="@Tree" weight="10.0"/>
+    <operator id="BayesianSkylineUniformOperator" spec="Uniform" tree="@Tree" weight="45.0"/>
+    <operator id="BayesianSkylineSubtreeSlide" spec="SubtreeSlide" tree="@Tree" weight="30.0" size="0.03" optimise="false"/>
+    <operator id="BayesianSkylineNarrow" spec="Exchange" tree="@Tree" weight="30.0"/>
+    <operator id="BayesianSkylineWide" spec="Exchange" isNarrow="false" tree="@Tree" weight="6.0"/>
+    <operator id="BayesianSkylineWilsonBalding" spec="WilsonBalding" tree="@Tree" weight="6.0"/>
+    <operator id="popSizesScaler" spec="ScaleOperator" parameter="@bPopSizes" scaleFactor="0.75" weight="15.0"/>
+    <operator id="groupSizesDelta" spec="DeltaExchangeOperator" integer="true" weight="10.0">
+      <intparameter idref="bGroupSizes"/>
+    </operator>   
+
+    <operator id="groupSizesDelta" spec="DeltaExchangeOperator" integer="true" weight="6.0">
+      <intparameter idref="groupSizes"/>
+    </operator>  -->
+    
+    
+    <!--  <operator id="georateScaler" spec="ScaleOperator" parameter="@relativeGeoRates" scaleAllIndependently="true" scaleFactor="0.99" weight="3.0"/>
+    <operator id="indicatorFlip" spec="BitFlipOperator" parameter="@rateIndicator" weight="3.0"/>
+    <operator id="geoMuScaler" spec="ScaleOperator" parameter="@traitClockRate" scaleFactor="0.9" weight="1.0"/>
+    <operator id="BSSVSoperator" spec="BitFlipBSSVSOperator" indicator="@rateIndicator" mu="@traitClockRate" weight="3.0"/> --> 
+    <operator id="KappaScaler:codon1" spec="BactrianScaleOperator" parameter="@kappa:codon1" scaleFactor="0.5" weight="0.01"/>
+    <operator id="KappaScaler:codon2" spec="BactrianScaleOperator" parameter="@kappa:codon2" scaleFactor="0.5" weight="0.01"/>
+    <operator id="KappaScaler:codon3" spec="BactrianScaleOperator" parameter="@kappa:codon3" scaleFactor="0.5" weight="0.01"/>
+    <operator id="KappaScaler:noncoding" spec="ScaleOperator" parameter="@kappa:noncoding" scaleFactor="0.5" weight="0.01"/>
+    <operator id="FrequenciesExchanger:codon2" spec="BactrianDeltaExchangeOperator" delta="0.01" weight="0.02">
+      <parameter idref="freq:codon2"/>
+    </operator>
+    <operator id="FrequenciesExchanger:noncoding" spec="DeltaExchangeOperator" delta="0.01" weight="0.02">
+      <parameter idref="freq:noncoding"/> 
+    </operator>
+    <operator id="FrequenciesExchanger:codon1" spec="BactrianDeltaExchangeOperator" delta="0.01" weight="0.02">
+      <parameter idref="freq:codon1"/>
+    </operator>
+    <operator id="FrequenciesExchanger:codon3" spec="BactrianDeltaExchangeOperator" delta="0.01" weight="0.02">
+      <parameter idref="freq:codon3"/>
+    </operator>
+    
+    <operator id="BayesianSkylineTreeRootScaler" spec="BactrianScaleOperator" rootOnly="true" scaleFactor="0.25" tree="@Tree" weight="10.0"/>
+    <operator id="BayesianSkylineWide" spec="Exchange" isNarrow="false" tree="@Tree" weight="6.0"/>
+    <operator id="BayesianSkylineWilsonBalding" spec="WilsonBalding" tree="@Tree" weight="6.0"/>
+
+
+    <operator id="PopSizeScaler" spec="BactrianScaleOperator" parameter="@popSize" scaleFactor="0.5" weight="3.0"/>
+    
+    
+    <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="20000" model="@posterior" sanitiseHeaders="true" sort="smart">
+      <log idref="posterior"/>
+      <log idref="likelihood"/>
+      <log idref="prior"/>
+      <log id="TreeHeight" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree"/>
+      <log idref="treeLikelihood.codon1"/>
+      <log idref="treeLikelihood.codon2"/>
+      <log idref="treeLikelihood.codon3"/>
+      <log idref="treeLikelihood.noncoding"/>
+      <log idref="mutationRate:codon1"/>
+      <log idref="mutationRate:codon2"/>
+      <log idref="mutationRate:codon3"/>
+      <log idref="mutationRate:noncoding"/>
+      <log idref="strict.clock"/>
+      <log idref="BICEPS"/>
+      <log idref="popSize"/>
+      <log idref="kappa:codon1"/>
+      <log idref="kappa:codon2"/>
+      <log idref="kappa:codon3"/>
+      <log idref="kappa:noncoding"/>
+      <log idref="freq:codon1"/>
+      <log idref="freq:codon2"/>
+      <log idref="freq:codon3"/>
+      <log idref="freq:noncoding"/>
+    </logger>
+    <logger id="screenlog" spec="Logger" logEvery="20000">
+      <log idref="posterior"/>
+      <log idref="likelihood"/>
+      <log idref="prior"/>
+      <log idref="strict.clock"/>
+      <log idref="TreeHeight"/>
+    </logger>
+    <!-- 
+        <logger id="treelog" spec="Logger" fileName="dpg.trees" logEvery="20000" mode="tree">
+                <log id="TreeWithMetaDataLogger" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree"/>
+        </logger>
+ -->
+    <logger id="treelog.loc" spec="Logger" fileName="$(filebase).trees" logEvery="20000" mode="tree">
+      <log id="TreeWithTraitLogger.0" spec="beast.evolution.tree.TreeWithTraitLogger" tree="@Tree">
+        <!--<metadata idref="posterior"/>
+        <metadata idref="traitedtreeLikelihood.loc"/>-->
+      </log>
+    </logger>
+    <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+  </run>
+</beast>

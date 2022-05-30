@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:skylinetools.util" required="" version="2.6">
+        
+    <data
+id="Rt_strains_peru_andi_seqs"
+spec="Alignment">
+  $(sequences)                         
+    </data>
+        
+
+
+ <function spec="beast.core.util.Slice" id="samplingProportionSlice" arg="@samplingProportion_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" index="1" count="1"/> 
+    
+
+    <map name="Uniform" >beast.math.distributions.Uniform</map>
+    
+    <map name="Exponential" >beast.math.distributions.Exponential</map>
+    
+    <map name="LogNormal" >beast.math.distributions.LogNormalDistributionModel</map>
+    
+    <map name="Normal" >beast.math.distributions.Normal</map>
+    
+    <map name="Beta" >beast.math.distributions.Beta</map>
+    
+    <map name="Gamma" >beast.math.distributions.Gamma</map>
+    
+    <map name="LaplaceDistribution" >beast.math.distributions.LaplaceDistribution</map>
+    
+    <map name="prior" >beast.math.distributions.Prior</map>
+    
+    <map name="InverseGamma" >beast.math.distributions.InverseGamma</map>
+    
+    <map name="OneOnX" >beast.math.distributions.OneOnX</map>
+    
+     <run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" chainLength="400000000" storeEvery="400000" deltaTemperature="0.003" chains="4" resampleEvery="500">
+            
+        <state id="state" spec="State" storeEvery="5000">
+                    
+            <tree id="Tree.t:Rt_strains_peru_andi_seqs" spec="beast.evolution.tree.Tree" name="stateNode">
+                            
+                <trait id="dateTrait.t:Rt_strains_peru_andi_seqs" spec="beast.evolution.tree.TraitSet" dateFormat="yyyy-M-dd" traitname="date" value="$(datetrait)">
+                                    
+                    <taxa id="TaxonSet.Rt_strains_peru_andi_seqs" spec="TaxonSet">
+                                            
+                        <alignment id="codon1" spec="FilteredAlignment" filter="$(filter-codon1)">
+                         <data idref="Rt_strains_peru_andi_seqs"/>
+						</alignment>               
+                    </taxa>                             
+                </trait>                           
+                <taxonset idref="TaxonSet.Rt_strains_peru_andi_seqs"/>
+                        
+            </tree>
+                    
+            <parameter id="clockRate.c:Rt_strains_peru_andi_seqs" spec="parameter.RealParameter" name="stateNode">0.0008</parameter>
+                                                     
+            <parameter id="kappa:codon1" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+			<parameter id="kappa:codon2" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+			<parameter id="kappa:codon3" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
+            <parameter id="kappa:noncoding" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>        
+            <parameter id="origin_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="Infinity">1000.0</parameter>
+                    
+            <parameter id="becomeUninfectiousRate_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="Infinity">1.0</parameter>
+                    
+            <parameter id="reproductiveNumber_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="parameter.RealParameter" dimension="10" lower="0.0" name="stateNode" upper="Infinity">2.0</parameter>
+                    
+            <!-- <parameter id="samplingProportion_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter> -->
+            
+            <parameter id="samplingProportion_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="parameter.RealParameter" name="stateNode" lower="0.0" upper="1.0">0 0.01</parameter>
+               
+            <parameter id="freq:codon1" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+			<parameter id="freq:codon2" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+			<parameter id="freq:codon3" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>    
+			<parameter id="freq:noncoding" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+			<parameter id="mutationRate:codon1" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+			<parameter id="mutationRate:codon2" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+			<parameter id="mutationRate:codon3" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+			<parameter id="mutationRate:noncoding" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+        </state>
+            
+   <!--     <init id="RandomTree.t:Rt_strains_peru_andi_seqs" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:Rt_strains_peru_andi_seqs" taxa="@Rt_strains_peru_andi_seqs"> -->
+          <init id="RandomTree.t:Rt_strains_peru_andi_seqs" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:Rt_strains_peru_andi_seqs" taxa="@codon1">                  
+            <populationModel id="ConstantPopulation0.t:Rt_strains_peru_andi_seqs" spec="ConstantPopulation">
+                            
+                <parameter id="randomPopSize.t:Rt_strains_peru_andi_seqs" spec="parameter.RealParameter" name="popSize">1.0</parameter>
+                        
+            </populationModel>
+                
+        </init>
+            
+        <distribution id="posterior" spec="util.CompoundDistribution">
+                    
+            <distribution id="prior" spec="util.CompoundDistribution">
+                            
+            <distribution id="BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="beast.evolution.speciation.BirthDeathSkylineModel" becomeUninfectiousRate="@becomeUninfectiousRate_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" origin="@origin_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" reproductiveNumber="@reproductiveNumber_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" samplingProportion="@samplingProportion_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" tree="@Tree.t:Rt_strains_peru_andi_seqs">
+				
+                             
+            <samplingRateChangeTimes spec="TreeSlicer" id="samplingTreeSlice" tree="@Tree.t:Rt_strains_peru_andi_seqs" dimension="2" to="oldestsample" inclusive="true"/>
+                       
+                             
+				<birthRateChangeTimes spec="TreeSlicer" id="ReTreeSlice" tree="@Tree.t:Rt_strains_peru_andi_seqs" dimension="10" to="tmrca" inclusive="false"/>
+				<reverseTimeArrays spec="beast.core.parameter.BooleanParameter" value="false false true false false false"/>
+				</distribution>                 
+                              
+                <prior id="becomeUninfectiousRatePrior_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" name="distribution" x="@becomeUninfectiousRate_BDSKY_Serial.t:Rt_strains_peru_andi_seqs">
+                                    
+                    <Exponential id="Exponential.1" name="distr">
+                                            
+                        <parameter id="RealParameter.23" spec="parameter.RealParameter" estimate="false" name="mean">36.0</parameter>
+                                        
+                    </Exponential>
+                                
+                </prior>
+                            
+                <prior id="ClockPrior.c:Rt_strains_peru_andi_seqs" name="distribution" x="@clockRate.c:Rt_strains_peru_andi_seqs">
+                                    
+                    <LogNormal id="LogNormalDistributionModel.22" meanInRealSpace="true" name="distr">
+                                            
+                        <parameter id="RealParameter.5" spec="parameter.RealParameter" estimate="false" name="M">0.0008</parameter>
+                                            
+                        <parameter id="RealParameter.6" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">0.03</parameter>
+                                        
+                    </LogNormal>
+                                
+                </prior>
+                            
+              <!--  <prior id="FrequenciesPrior.s:Rt_strains_peru_andi_seqs" name="distribution" x="@freqParameter.s:Rt_strains_peru_andi_seqs">
+                                    
+                    <Uniform id="Uniform.6" name="distr" upper="Infinity"/>
+                                
+                </prior> -->
+                
+			<prior id="FrequenciesPrior:codon1" name="distribution" x="@freq:codon1">
+				<distr id="Dirichlet.1" spec="beast.math.distributions.Dirichlet">
+					<parameter id="Param.Dirichlet.1" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+				</distr>
+			</prior>
+			<prior id="FrequenciesPrior:codon2" name="distribution" x="@freq:codon2">
+				<distr id="Dirichlet.2" spec="beast.math.distributions.Dirichlet">
+					<parameter id="Param.Dirichlet.2" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+				</distr>
+			</prior>
+			<prior id="FrequenciesPrior:codon3" name="distribution" x="@freq:codon3">
+				<distr id="Dirichlet.3" spec="beast.math.distributions.Dirichlet">
+					<parameter id="Param.Dirichlet.3" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+				</distr>
+			</prior>
+			
+			<prior id="FrequenciesPrior:noncoding" name="distribution" x="@freq:noncoding">
+				<distr id="Dirichlet.4" spec="beast.math.distributions.Dirichlet">
+					<parameter id="Param.Dirichlet.4" spec="parameter.RealParameter" dimension="4" lower="0.0" name="alpha" upper="0.0">1.0 1.0 1.0 1.0</parameter>
+				</distr>
+			</prior>
+                            
+              <!--  <prior id="kappa1Prior.s:Rt_strains_peru_andi_seqs" name="distribution" x="@kappa1.s:Rt_strains_peru_andi_seqs">
+                                    
+                    <LogNormal id="LogNormalDistributionModel.0" name="distr">
+                                            
+                        <parameter id="RealParameter.1" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                                            
+                        <parameter id="RealParameter.2" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+                                        
+                    </LogNormal>
+                                
+                </prior> -->
+                
+               <prior id="KappaPrior:codon1" name="distribution" x="@kappa:codon1">
+				<LogNormal id="LogNormalDistributionModel.2" name="distr">
+					<parameter id="RealParameter.10" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+					<parameter id="RealParameter.11" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">1.25</parameter>
+				</LogNormal>
+			   </prior>
+			  <prior id="KappaPrior:codon2" name="distribution" x="@kappa:codon2">
+				<LogNormal id="LogNormalDistributionModel.0.codon2" name="distr">
+					<parameter id="RealParameter.4.codon2" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+					<parameter id="RealParameter.5.codon2" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+				</LogNormal>
+			 </prior>
+			<prior id="KappaPrior:codon3" name="distribution" x="@kappa:codon3">
+				<LogNormal id="LogNormalDistributionModel.0.codon3" name="distr">
+					<parameter id="RealParameter.4.codon3" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+					<parameter id="RealParameter.5.codon3" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+				</LogNormal>
+		    </prior>
+		    
+		    <prior id="KappaPrior:noncoding" name="distribution" x="@kappa:noncoding">
+				<LogNormal id="LogNormalDistributionModel.0.noncoding" name="distr">
+					<parameter id="RealParameter.4.noncoding" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+					<parameter id="RealParameter.5.noncoding" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+				</LogNormal>
+		    </prior>
+                            
+             <!--   <prior id="kappa2Prior.s:Rt_strains_peru_andi_seqs" name="distribution" x="@kappa2.s:Rt_strains_peru_andi_seqs">
+                                    
+                    <LogNormal id="LogNormalDistributionModel.1" name="distr">
+                                            
+                        <parameter id="RealParameter.3" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                                            
+                        <parameter id="RealParameter.4" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+                                        
+                    </LogNormal>
+                                
+                </prior> -->
+                            
+                <prior id="originPrior_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" name="distribution" x="@origin_BDSKY_Serial.t:Rt_strains_peru_andi_seqs">
+                                    
+                    <Uniform id="Uniform.5" name="distr" upper="Infinity"/>
+                                
+                </prior>
+                            
+               <prior id="reproductiveNumberPrior_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" name="distribution" x="@reproductiveNumber_BDSKY_Serial.t:Rt_strains_peru_andi_seqs">
+                                    
+                    <LogNormal id="LogNormalDistributionModel.6" name="distr">
+                                            
+                        <parameter id="RealParameter.19" spec="parameter.RealParameter" estimate="false" name="M">0.8</parameter>
+                                            
+                        <parameter id="RealParameter.20" spec="parameter.RealParameter" estimate="false" name="S">0.5</parameter>
+                                        
+                    </LogNormal>
+                                
+                </prior>
+                            
+                <prior id="samplingProportionPrior_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" name="distribution" x="@samplingProportionSlice">
+                                    
+                    <Beta id="Beta.3" name="distr">
+                                            
+                        <parameter id="RealParameter.21" spec="parameter.RealParameter" estimate="false" name="alpha">1.0</parameter>
+                                            
+                        <parameter id="RealParameter.22" spec="parameter.RealParameter" estimate="false" name="beta">100.0</parameter>
+                                        
+                    </Beta>
+                                
+                </prior>
+                 
+                        
+            </distribution>
+                    
+            <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
+                            
+                <distribution id="treeLikelihood.codon1" spec="ThreadedTreeLikelihood" data="@Rt_strains_peru_andi_seqs" tree="@Tree.t:Rt_strains_peru_andi_seqs">
+                                    
+                    <siteModel id="SiteModel.s:codon1" spec="SiteModel" mutationRate="@mutationRate:codon1">
+                                            
+                                            
+                        <parameter id="gammaShape:codon1" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+						<parameter id="proportionInvariant:codon1" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+						<substModel id="hky:codon1" spec="HKY" kappa="@kappa:codon1">
+							<frequencies id="estimatedFreqs:codon1" spec="Frequencies" frequencies="@freq:codon1"/>
+						</substModel>
+                                        
+                    </siteModel>
+                                    
+                    <branchRateModel id="StrictClock.c:Rt_strains_peru_andi_seqs" spec="beast.evolution.branchratemodel.StrictClockModel" clock.rate="@clockRate.c:Rt_strains_peru_andi_seqs"/>
+                                
+                </distribution>
+            
+     <distribution id="treeLikelihood.codon2" spec="ThreadedTreeLikelihood" branchRateModel="@StrictClock.c:Rt_strains_peru_andi_seqs" tree="@Tree.t:Rt_strains_peru_andi_seqs">
+          <data id="codon2" spec="FilteredAlignment" data="@Rt_strains_peru_andi_seqs" filter="$(filter-codon2)"/>
+          <siteModel id="SiteModel:codon2" spec="SiteModel" mutationRate="@mutationRate:codon2">
+            <parameter id="gammaShape:codon2" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant:codon2" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="hky:codon2" spec="HKY" kappa="@kappa:codon2">
+              <frequencies id="estimatedFreqs:codon2" spec="Frequencies" frequencies="@freq:codon2"/>
+            </substModel>
+          </siteModel>
+        </distribution>
+        
+        <distribution id="treeLikelihood.codon3" spec="ThreadedTreeLikelihood" branchRateModel="@StrictClock.c:Rt_strains_peru_andi_seqs" tree="@Tree.t:Rt_strains_peru_andi_seqs">
+          <data id="codon3" spec="FilteredAlignment" data="@Rt_strains_peru_andi_seqs" filter="$(filter-codon3)"/>
+          <siteModel id="SiteModel:codon3" spec="SiteModel" mutationRate="@mutationRate:codon3">
+            <parameter id="gammaShape:codon3" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant:codon3" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="hky:codon3" spec="HKY" kappa="@kappa:codon3">
+              <frequencies id="estimatedFreqs:codon3" spec="Frequencies" frequencies="@freq:codon3"/>
+            </substModel>
+          </siteModel>
+        </distribution>   
+        
+        <distribution id="treeLikelihood.noncoding" spec="ThreadedTreeLikelihood" branchRateModel="@StrictClock.c:Rt_strains_peru_andi_seqs" tree="@Tree.t:Rt_strains_peru_andi_seqs">
+          <data id="noncoding" spec="FilteredAlignment" data="@Rt_strains_peru_andi_seqs" filter="$(filter-noncoding)"/>
+          <siteModel id="SiteModel:noncoding" spec="SiteModel" mutationRate="@mutationRate:noncoding">
+            <parameter id="gammaShape:noncoding" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+            <parameter id="proportionInvariant:noncoding" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+            <substModel id="hky:noncoding" spec="HKY" kappa="@kappa:noncoding">
+              <frequencies id="estimatedFreqs:noncoding" spec="Frequencies" frequencies="@freq:noncoding"/>
+            </substModel>
+          </siteModel>
+        </distribution>       
+                   
+       </distribution>
+      </distribution>
+    
+    <operator id="FixMeanMutationRatesOperator" spec="DeltaExchangeOperator" delta="0.75" weight="0.03">
+      <parameter idref="mutationRate:codon1"/>
+      <parameter idref="mutationRate:codon2"/>
+      <parameter idref="mutationRate:codon3"/>
+      <parameter idref="mutationRate:noncoding"/>
+      <weightvector id="weightparameter" spec="parameter.IntegerParameter" dimension="4" estimate="false" lower="0" upper="0">$(partitionweights)</weightvector>
+    </operator>
+    
+         
+        <operator id="StrictClockRateScaler.c:Rt_strains_peru_andi_seqs" spec="ScaleOperator" parameter="@clockRate.c:Rt_strains_peru_andi_seqs" weight="3.0"/>
+            
+        <operator id="strictClockUpDownOperator.c:Rt_strains_peru_andi_seqs" spec="UpDownOperator" scaleFactor="0.75" weight="3.0">
+                    
+            <up idref="clockRate.c:Rt_strains_peru_andi_seqs"/>
+                    
+            <down idref="Tree.t:Rt_strains_peru_andi_seqs"/>
+                
+        </operator>
+            
+              
+		<operator id="KappaScaler:codon1" spec="ScaleOperator" parameter="@kappa:codon1" scaleFactor="0.5" weight="0.01"/>
+		<operator id="KappaScaler:codon2" spec="ScaleOperator" parameter="@kappa:codon2" scaleFactor="0.5" weight="0.01"/>
+		<operator id="KappaScaler:codon3" spec="ScaleOperator" parameter="@kappa:codon3" scaleFactor="0.5" weight="0.01"/>
+        <operator id="KappaScaler:noncoding" spec="ScaleOperator" parameter="@kappa:noncoding" scaleFactor="0.5" weight="0.01"/>
+            
+        <operator id="BDSKY_SerialTreeScaler.t:Rt_strains_peru_andi_seqs" spec="ScaleOperator" scaleFactor="0.5" tree="@Tree.t:Rt_strains_peru_andi_seqs" weight="3.0"/>
+            
+        <operator id="BDSKY_SerialTreeRootScaler.t:Rt_strains_peru_andi_seqs" spec="ScaleOperator" rootOnly="true" scaleFactor="0.5" tree="@Tree.t:Rt_strains_peru_andi_seqs" weight="3.0"/>
+            
+        <operator id="BDSKY_SerialUniformOperator.t:Rt_strains_peru_andi_seqs" spec="Uniform" tree="@Tree.t:Rt_strains_peru_andi_seqs" weight="30.0"/>
+            
+        <operator id="BDSKY_SerialSubtreeSlide.t:Rt_strains_peru_andi_seqs" spec="SubtreeSlide" tree="@Tree.t:Rt_strains_peru_andi_seqs" weight="15.0"/>
+            
+        <operator id="BDSKY_SerialNarrow.t:Rt_strains_peru_andi_seqs" spec="Exchange" tree="@Tree.t:Rt_strains_peru_andi_seqs" weight="15.0"/>
+            
+        <operator id="BDSKY_SerialWide.t:Rt_strains_peru_andi_seqs" spec="Exchange" isNarrow="false" tree="@Tree.t:Rt_strains_peru_andi_seqs" weight="3.0"/>
+            
+        <operator id="BDSKY_SerialWilsonBalding.t:Rt_strains_peru_andi_seqs" spec="WilsonBalding" tree="@Tree.t:Rt_strains_peru_andi_seqs" weight="3.0"/>
+            
+        <operator id="becomeUninfectiousRateScaler_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="ScaleOperator" parameter="@becomeUninfectiousRate_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" weight="2.0"/>
+            
+        <operator id="reproductiveNumberScaler_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="ScaleOperator" parameter="@reproductiveNumber_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" weight="10.0"/>
+            
+        <operator id="samplingProportionScaler_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="ScaleOperator" parameter="@samplingProportion_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" weight="10.0"/>
+            
+        <operator id="updownBD_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="UpDownOperator" scaleFactor="0.75" weight="2.0">
+                    
+            <up idref="reproductiveNumber_BDSKY_Serial.t:Rt_strains_peru_andi_seqs"/>
+                    
+            <down idref="becomeUninfectiousRate_BDSKY_Serial.t:Rt_strains_peru_andi_seqs"/>
+                
+        </operator>
+            
+        <operator id="origScaler_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" spec="ScaleOperator" parameter="@origin_BDSKY_Serial.t:Rt_strains_peru_andi_seqs" weight="1.0"/>
+            
+      
+        <operator id="FrequenciesExchanger:codon1" spec="DeltaExchangeOperator" delta="0.01" weight="0.02">
+			<parameter idref="freq:codon1"/>
+		</operator>
+        <operator id="FrequenciesExchanger:codon2" spec="DeltaExchangeOperator" delta="0.01" weight="0.02">
+			<parameter idref="freq:codon2"/>
+		</operator>
+		<operator id="FrequenciesExchanger:codon3" spec="DeltaExchangeOperator" delta="0.01" weight="0.02">
+			<parameter idref="freq:codon3"/>
+		</operator>  
+		<operator id="FrequenciesExchanger:noncoding" spec="DeltaExchangeOperator" delta="0.01" weight="0.02">
+			<parameter idref="freq:noncoding"/>
+		</operator>       
+            
+        <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="40000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="posterior"/>
+                    
+            <log idref="likelihood"/>
+                    
+            <log idref="prior"/>
+            
+            <log idref="treeLikelihood.codon1"/>
+			<log idref="treeLikelihood.codon2"/>
+			<log idref="treeLikelihood.codon3"/>
+			<log idref="treeLikelihood.noncoding"/>
+			<log idref="mutationRate:codon1"/>
+			<log idref="mutationRate:codon2"/>
+			<log idref="mutationRate:codon3"/>
+            <log idref="mutationRate:noncoding"/>        
+            <log id="TreeHeight.t:Rt_strains_peru_andi_seqs" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:Rt_strains_peru_andi_seqs"/>
+                    
+            <log idref="clockRate.c:Rt_strains_peru_andi_seqs"/>
+                    
+			<log idref="kappa:codon1"/>
+			<log idref="kappa:codon2"/>
+			<log idref="kappa:codon3"/>
+            <log idref="kappa:noncoding"/>   
+                 
+            <log idref="BDSKY_Serial.t:Rt_strains_peru_andi_seqs"/>
+                    
+            <log idref="origin_BDSKY_Serial.t:Rt_strains_peru_andi_seqs"/>
+                    
+            <log idref="becomeUninfectiousRate_BDSKY_Serial.t:Rt_strains_peru_andi_seqs"/>
+                    
+            <log idref="reproductiveNumber_BDSKY_Serial.t:Rt_strains_peru_andi_seqs"/>
+                    
+            <log idref="samplingProportion_BDSKY_Serial.t:Rt_strains_peru_andi_seqs"/>
+                    
+            <log idref="freq:codon1"/>
+			<log idref="freq:codon2"/>
+			<log idref="freq:codon3"/>
+			<log idref="freq:noncoding"/>
+			
+            <log idref="ReTreeSlice"/>
+			<log spec="TreeSliceDateLogger" treeSlice="@ReTreeSlice"/>
+            <log idref="samplingTreeSlice"/>
+            <log spec="TreeSliceDateLogger" treeSlice="@samplingTreeSlice"/>
+                
+        </logger>
+            
+        <logger id="screenlog" spec="Logger" logEvery="40000">
+                    
+            <log idref="posterior"/>
+                    
+            <log idref="likelihood"/>
+                    
+            <log idref="prior"/>
+                
+        </logger>
+            
+        <logger id="treelog.t:Rt_strains_peru_andi_seqs" spec="Logger" fileName="$(tree).trees" logEvery="40000" mode="tree">
+                    
+            <log id="TreeWithMetaDataLogger.t:Rt_strains_peru_andi_seqs" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.t:Rt_strains_peru_andi_seqs"/>
+                
+        </logger>
+            
+        <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+        
+    </run>
+    
+</beast>
