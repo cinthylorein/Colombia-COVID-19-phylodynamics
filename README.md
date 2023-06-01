@@ -1,5 +1,6 @@
 # Colombia-COVID-19-phylodynamics
-A repository of phylodynamic inferences focusing on the COVID-19 variants which have circulated in Colombia.
+
+A repository of phylodynamic inferences focusing on the COVID-19 variants which have circulated in Colombia. This repository as part of the paper titled "Genomic epidemiology of circulating SARS-CoV-2 variants during the first two years of the pandemic in Colombia" likely focuses on analyzing the genomic data of SARS-CoV-2 in Colombia to understand the transmission dynamics and impact of different variants over a two-year period. This study used Bayesian phylodynamic analyses to estimate the time of variant introductions, their reproductive numbers, effective population size, and the impact of disease control measures. The Mu variant (lineage B.1.621) is highlighted as a significant local wave in Colombia.
 
 ###  Predominant COVID-19 variants in Colombia
 
